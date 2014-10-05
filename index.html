@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Chicago</title>
+		<script src="js/d3.v3.min.js"></script>
+	</head>
+	<body bgcolor="#000000">
+		<div id="map" style="width:100%; height:100%; float:left"></div>
+		<script>
+			var svg = d3.select("#map")
+				.append("svg:svg")
+				.attr("width", 1200)
+				.attr("height", 800);
+
+			d3.json("json/map_chicago.json", function(json) {
+				var center = d3.geo.centroid(json)
+				var scale  = 80000;
+				var offset = [400, 400];
+				var projection = d3.geo.mercator().scale(scale).center(center)
+					.translate(offset);
+				var path = d3.geo.path().projection(projection);
+
+				svg.selectAll("path")
+				   .data(json.features)
+				   .enter()
+				   .append("path")
+				   .attr("d", path)
+				   .attr("fill", "rgb(0,32,0)")
+				   .attr("stroke", "rgb(0,128,0)");
+			});
+			
+		</script>
+	</body>
+</html>
