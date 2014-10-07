@@ -12,7 +12,7 @@
 				.attr("width", 1200)
 				.attr("height", 800);
 
-			d3.json("json/map_chicago.json", function(json) {
+			d3.json("data/map_chicago.json", function(json) {
 				var center = d3.geo.centroid(json)
 				var scale  = 80000;
 				var offset = [400, 400];
