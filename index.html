@@ -20,10 +20,12 @@
             height: 1000px;
         }
         
-        .SvgOverlay, .SvgOverlay svg {
+         .SvgOverlay svg {
             position: absolute;
-            top: 0;
-            left: 0;            
+            top:-4000px;
+            left: -4000px; 
+			width: 8000px;
+			height: 8000px;
         }
         
         .SvgOverlay path {
@@ -81,7 +83,7 @@
                     var googleMapProjection = function (coordinates) {
                         var googleCoordinates = new google.maps.LatLng(coordinates[1], coordinates[0]);
                         var pixelCoordinates = overlayProjection.fromLatLngToDivPixel(googleCoordinates);
-                        return [pixelCoordinates.x, pixelCoordinates.y];
+                        return [pixelCoordinates.x + 4000, pixelCoordinates.y + 4000];
                     }
 					 
                     path = d3.geo.path().projection(googleMapProjection);
