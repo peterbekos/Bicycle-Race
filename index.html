@@ -10,15 +10,41 @@ and open the template in the editor.
         <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
         
         <style>
+			html {
+				height: 100%;
+				margin: 0;
+				padding: 0;
+			}
+			body {
+				margin:0;
+				padding:0;
+				height:100%;
+			}
             #map {
-            width: 1000px; /* just big enough to show the whole thing at zoom #6 */
-            height: 1000px;
-        }
+				width: 35%; /* just big enough to show the whole thing at zoom #6 */
+				height: 100%;
+				float:left; 
+				background-color:#330000
+			}
+			#info {
+				width: 35%;
+				height: 100%;
+				float:left; 
+				background-color:#003300
+			}
+			#calandar {
+				width: 30%;
+				height: 100%;
+				float:left; 
+				background-color:#000033
+			}
         </style>
         
     </head>
     <body>
         <div id="map"></div>
+		<div id="info"></div>
+		<div id="calandar"></div>
 	 <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
          
          
