@@ -69,18 +69,18 @@ and open the template in the editor.
 		}).addTo(map);
                 
                 var myIcon = L.icon({
-                    iconUrl: 'http://greenscor.es/images/legend-divvy.png',
+                    iconUrl: 'Winnie_The_Pooh.png',
                    // iconRetinaUrl: 'my-icon@2x.png',
-                    iconSize: [25, 25],
+                    iconSize: [70, 90],
                     iconAnchor: [22, 94],
-                    popupAnchor: [-3, -76]
+                    popupAnchor: [-10,-85],
                     //shadowUrl: 'my-icon-shadow.png',
                     //shadowRetinaUrl: 'my-icon-shadow@2x.png',
-                    //shadowSize: [68, 95],
-                    //shadowAnchor: [22, 94]
+                    shadowSize: [68, 95],
+                   shadowAnchor: [22, 94]
                 });
                 
-                L.marker([41.8369, -87.6847], {icon: myIcon}).addTo(map);
+                L.marker([41.8369, -87.6847], {icon: myIcon}).addTo(map).bindPopup("Shahbaz is awesome!");
                 
                 
            var myStyle = {
