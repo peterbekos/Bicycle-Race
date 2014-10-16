@@ -8,7 +8,7 @@ and open the template in the editor.
         <title></title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
-        
+        <script src="http://d3js.org/d3.v3.min.js"></script>
         <style>
            html {
 				height: 100%;
@@ -30,13 +30,13 @@ and open the template in the editor.
 				width: 35%;
 				height: 100%;
 				float:left; 
-				background-color:#003300
+				background-color:teal
 			}
 			#calandar {
 				width: 30%;
 				height: 100%;
 				float:left; 
-				background-color:#000033
+				background-color:purple
 			}
         
         myLayer {
@@ -54,7 +54,9 @@ and open the template in the editor.
         
 	<div id="calandar"></div>
 	 <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+           
          <script>
+               //d3 added on after the fact
              
       
     		var map = L.map('map').setView([41.8369, -87.6847], 11);
@@ -70,8 +72,8 @@ and open the template in the editor.
                 
                 var myIcon = L.icon({
                     iconUrl: 'Winnie_The_Pooh.png',
-                   // iconRetinaUrl: 'my-icon@2x.png',
-                    iconSize: [70, 90],
+                   // iconRetinaUrl: 'my-icon@2x.png', 
+                    iconSize: [25, 25],
                     iconAnchor: [22, 94],
                     popupAnchor: [-10,-85],
                     //shadowUrl: 'my-icon-shadow.png',
@@ -80,11 +82,18 @@ and open the template in the editor.
                    shadowAnchor: [22, 94]
                 });
                 
-                L.marker([41.8369, -87.6847], {icon: myIcon}).addTo(map).bindPopup("Shahbaz is awesome!");
+               // L.marker([41.8369, -87.6847], {icon: myIcon}).addTo(map).bindPopup("Shahbaz is awesome!");
+               
+                 //L.marker([data.latitude, data.longitude]).addTo(map).bindPopup("Shahbaz is awesome! data.name");          
+               
+               
+            //    L.marker([41.8369, -87.6847]).addTo(map).bindPopup("Shahbaz is awesome!");
+                
+                
                 
                 
            var myStyle = {
-               "color" : "orange",
+               "color" : "teal",
                "stroke": "#fff",
                "opacity" : "0.2",
                "weight" : "3"
@@ -97,12 +106,37 @@ and open the template in the editor.
                style: myStyle
            } ).addTo(map);
            
+          // var name = [];
+           
+           d3.json("Data/divvy_stationswithID.json", function(error, json){
+               
+               var data = json.DivvyStations;
+               
+               for(var i = 0; i < data.length; i++)
+                   {
+                       var lon = parseFloat(data[i].longitude);
+                       var lat = parseFloat(data[i].latitude);
+                       var name = (data[i].name);
+                       var dcapacity = parseInt(data[i].dpcapacity);
+                       var stationID = parseInt(data[i].id);
+                       
+                       console.log(name);
+                       
+                         L.marker([lat, lon]).addTo(map).bindPopup(name + "<br/>Capacity: " + dcapacity);
+//                       L.marker([lat, lon]).addTo(map);//.bindPopup("name is", + name);
+                       
+                       
+                   };
+               
+               
+           });
            
            
            myLayer.addData(geojsonFeature);
             
            
-           L.marker([50.5, 30.5]).addTo(map);
+         L.marker([23.0300, 72.5800]).addTo(map).bindPopup("This is where Hardik is from!<br/>City: Ahmedabad, India");
+          L.marker([33.7167, 73.0667]).addTo(map).bindPopup("This is where his Majesty, Shahbaz, was born!<br/>City: Islamabad, Pakistan");
 
        
 	
