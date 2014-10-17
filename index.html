@@ -49,10 +49,10 @@ and open the template in the editor.
     </head>
     <body>
        
-        <div id="map"></div>
+    <div id="map"></div>
 	<div id="info"></div>
-        
 	<div id="calandar"></div>
+	
 	 <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
            
          <script>
@@ -120,15 +120,21 @@ and open the template in the editor.
                        var dcapacity = parseInt(data[i].dpcapacity);
                        var stationID = parseInt(data[i].id);
                        
-                       console.log(name);
+                       //console.log(name);
                        
-                         L.marker([lat, lon]).addTo(map).bindPopup(name + "<br/>Capacity: " + dcapacity);
+                        var marker = L.marker([lat, lon]).addTo(map).bindPopup(name + "<br/>Capacity: " + dcapacity);
 //                       L.marker([lat, lon]).addTo(map);//.bindPopup("name is", + name);
-                       
-                       
+                        marker["name"] = name;
+						marker["stationID"] = stationID;
+						
+					   marker.on('click', function(e) {
+							console.log(this.name);
+							d3.select("#info")
+								.text(this.name + " " + this.stationID);
+					   });
+					   
                    };
-               
-               
+                           
            });
            
            
