@@ -52,7 +52,75 @@
 	 <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
            
          <script>
-             
+//***************************************************************************************                
+//Custom + Dynamic Icons                 
+                
+            var myIcon = L.icon({
+                iconUrl: 'Winnie_The_Pooh.png',
+                iconSize: [25, 25],
+                iconAnchor: [22, 94],
+                popupAnchor: [-10,-85],
+                shadowSize: [68, 95],
+                shadowAnchor: [22, 94]
+            });
+                           
+                     
+          //Define quantize scale to sort data values into buckets of color
+			var color = d3.scale.quantize()
+				      .range(["rgb(237,248,233)","rgb(186,228,179)","rgb(116,196,118)","rgb(49,163,84)","rgb(0,109,44)"]);
+	 //Colors taken from colorbrewer.js, included in the D3 download
+
+//        var max = d3.max(arr);
+//          var scale = d3.scale.linear().domain([15, 25]).range([0, 1]);
+ //***************************************************************************************          
+ //stationswithID file is opened and mapped here         
+          
+          var divvyStationLayer = new L.LayerGroup();
+          
+           d3.json("data/divvy_stationswithID.json", function(error, json){
+               
+               var data = json.DivvyStations;
+               var stationsInfo = [];
+               var stationsCapacity = [];
+               //Reading Station info into array
+               for(var i = 0; i < data.length; i++)
+                   {
+                       var lon = parseFloat(data[i].longitude);
+                       var lat = parseFloat(data[i].latitude);
+                       var name = (data[i].name);
+                       var dcapacity = parseInt(data[i].dpcapacity);
+                       var stationID = parseInt(data[i].id);
+                       
+                      stationsInfo[i] = [name, lat, lon, dcapacity, stationID];
+                      stationsCapacity[i] = [dcapacity]; //seperate array needed to scale for opacity
+                                            
+                   };
+                   
+                   //scaling stationsCapacity array to set marker opacity
+                   var max = d3.max(stationsCapacity);
+                   var min = d3.min(stationsCapacity);        
+                   var scale = d3.scale.linear().domain([min, max]).range([0.6, 1]);
+                               
+                   //Adding stations to map w/ pop-ups and, making the station markers responsive by 
+                   //displaying name and id of statio in "info" div
+                   for(var i = 0; i < data.length; i++)
+                   {
+                   //adding stations to a layerGroup instead of straigh to the map for toggabiity (Not a word, apparently)
+                   var marker = L.marker([stationsInfo[i][1], stationsInfo[i][2]],{opacity: (scale(stationsInfo[i][3])),'marker-color': '#ff8888', riseOnHover: true})
+                                 .addTo(divvyStationLayer).bindPopup(stationsInfo[i][0] + "<br/>Capacity: " + stationsInfo[i][3]);
+                         
+                        marker["name"] = stationsInfo[i][0];
+			marker["stationID"] = stationsInfo[i][4];
+						
+                        marker.on('click', function(e) {
+                                      console.log(this.name);
+                                      d3.select("#info")
+                                        .text(this.name + " | Station ID: " + this.stationID);
+                         });
+					   
+                   }
+                    
+           });//end of divvysatiionswithID.json read-in
 //*************************************************************************************** 
 //MAP INTERACTIVITY               
 //link descriptions
@@ -88,8 +156,12 @@ var baseLayers = {
         "Aerial View": aerialMap,
         "Street View": streetMap
 };
+
+var overlays = {
+	"Divvy Stations": divvyStationLayer
+};
 //binding layer group to map
-L.control.layers(baseLayers).addTo(map);
+L.control.layers(baseLayers, overlays).addTo(map);
 //can add multiple instances
 //L.control.layers(baseLayers).addTo(map);                
              
@@ -110,64 +182,7 @@ L.control.layers(baseLayers).addTo(map);
            } ).addTo(map);
                 
                 
-//***************************************************************************************                
-//Custom + Dynamic Icons                 
-                
-            var myIcon = L.icon({
-                iconUrl: 'Winnie_The_Pooh.png',
-                iconSize: [25, 25],
-                iconAnchor: [22, 94],
-                popupAnchor: [-10,-85],
-                shadowSize: [68, 95],
-                shadowAnchor: [22, 94]
-            });
-                           
-                     
-          //Define quantize scale to sort data values into buckets of color
-			var color = d3.scale.quantize()
-				      .range(["rgb(237,248,233)","rgb(186,228,179)","rgb(116,196,118)","rgb(49,163,84)","rgb(0,109,44)"]);
-	 //Colors taken from colorbrewer.js, included in the D3 download
 
-         // var max = d3.max(arr);
-          var scale = d3.scale.linear().domain([15, 25]).range([0, 1]);
- //***************************************************************************************          
- //stationswithID file is opened and mapped here         
-           d3.json("data/divvy_stationswithID.json", function(error, json){
-               
-               var data = json.DivvyStations;
-               var stationsInfo = [];
-               //Reading Station info into array
-               for(var i = 0; i < data.length; i++)
-                   {
-                       var lon = parseFloat(data[i].longitude);
-                       var lat = parseFloat(data[i].latitude);
-                       var name = (data[i].name);
-                       var dcapacity = parseInt(data[i].dpcapacity);
-                       var stationID = parseInt(data[i].id);
-                       
-                      stationsInfo[i] = [name, lat, lon, dcapacity, stationID];
-                                            
-                   };
-                   
-                   //Adding stations to map w/ pop-ups and, making the station markers responsive by 
-                   //displaying name and id of statio in "info" div
-                   for(var i = 0; i < data.length; i++)
-                   {
-                   var marker = L.marker([stationsInfo[i][1], stationsInfo[i][2]],{opacity: (scale*dcapacity)})
-                                 .addTo(map).bindPopup(stationsInfo[i][0] + "<br/>Capacity: " + dcapacity);
-                         
-                        marker["name"] = stationsInfo[i][0];
-			marker["stationID"] = stationsInfo[i][4];
-						
-                        marker.on('click', function(e) {
-                                      console.log(this.name);
-                                      d3.select("#info")
-                                        .text(this.name + " | Station ID: " + this.stationID);
-                         });
-					   
-                   }
-                    
-           });//end of divvysatiionswithID.json read-in
         
  //****************************************************************************
  //We will make lines of varying thicknesses (for popularity) on our maps (updated with time selected)
