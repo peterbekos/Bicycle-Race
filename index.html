@@ -202,7 +202,26 @@ L.control.layers(baseLayers, overlays).addTo(map);
 //                   ).addTo(map);
 //****************************************************************************                   
                
-             
+ // Open PHP script for sqlquery and copy male, female, total counter-increment
+var stationID_gender;
+var male_cnt;
+var female_cnt;
+var total_cnt;
+function gen_demo(id)
+{
+var querywithid = "http://www.hpraja2.people.uic.edu/mysqlgendercount.php?id.php?id="
+d3.json(querywithid.concat(id), function(error, data) {
+    data.forEach(function(d) {
+        stationID_gender = +(d.id);
+        male_cnt = +d.male_cnt;
+		female_cnt = +d.female_cnt;
+		total_cnt = +d.total_cnt;
+		console.log("ID: " + stationID_gender + " M: " + male_cnt + " F: " + female_cnt + " T: " + total_cnt);
+    });
+});	
+}
+
+// Hardik's work done            
            
                     
 //DO NOT DELETE - TEST POINTS 
