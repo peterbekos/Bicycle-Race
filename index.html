@@ -134,10 +134,10 @@
                                       d3.select("#info")
                                         .text(this.name + " | Station ID: " + this.stationID);
 										gen_demo(this.stationID);
-                         });
+					});
 					   
                    }
-                    
+               
            });//end of divvysatiionswithID.json read-in
 //*************************************************************************************** 
 //MAP INTERACTIVITY               
@@ -202,28 +202,25 @@ L.control.layers(baseLayers, overlays).addTo(map);
 //                       }
 //                   ).addTo(map);
 //****************************************************************************                   
-               
- // Open PHP script for sqlquery and copy male, female, total counter-increment
-var stationID_gender;
-var male_cnt;
-var female_cnt;
-var total_cnt;
+     
+
+// Open PHP script for sqlquery and copy male, female, total counter-increment
+
 function gen_demo(id)
 {
-var querywithid = "http://www.hpraja2.people.uic.edu/mysqlgendercount.php?id.php?id="
+var querywithid = "http://hpraja2.people.uic.edu/mysqlgendercount.php?id="
 d3.json(querywithid.concat(id), function(error, data) {
     data.forEach(function(d) {
         stationID_gender = +(d.id);
         male_cnt = +d.male_cnt;
 		female_cnt = +d.female_cnt;
 		total_cnt = +d.total_cnt;
-		console.log("ID: " + stationID_gender + " M: " + male_cnt + " F: " + female_cnt + " T: " + total_cnt);
+		d3.select("#info").append("text").text("\n Male: " + male_cnt + " | Female " + female_cnt + " | Total: " + total_cnt );
+		
+		
     });
 });	
 }
-
-// Hardik's work done            
-           
                     
 //DO NOT DELETE - TEST POINTS 
 //         L.marker([23.0300, 72.5800]).addTo(map).bindPopup("This is where Hardik is from!<br/>City: Ahmedabad, India");

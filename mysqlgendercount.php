@@ -1,4 +1,5 @@
 <?php
+header("Access-Control-Allow-Origin: *");
     $username = "csc424group8-ro"; 
     $password = "ilovedick2";   
     $host = "cs424group8@mysql.uic.edu";
