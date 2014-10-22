@@ -94,6 +94,8 @@
           
           var divvyStationLayer = new L.LayerGroup();
           
+          var arr =[];
+          
            d3.json("data/divvy_stationswithID.json", function(error, json){
                
                var data = json.DivvyStations;
@@ -132,11 +134,19 @@
                         marker.on('click', function(e) {
                                       console.log(this.name);
                                       d3.select("#info")
-                                        .text(this.name + " | Station ID: " + this.stationID);
+                                        .text(this.name + " | Station ID: " + this.stationID + "\n");
 										gen_demo(this.stationID);
+                                                                                
+                         // console.log(arr)                                                      
+                                                             
 					});
 					   
                    }
+                   
+                          
+//Starting pie chart 
+			
+					
                
            });//end of divvysatiionswithID.json read-in
 //*************************************************************************************** 
@@ -204,8 +214,16 @@ L.control.layers(baseLayers, overlays).addTo(map);
 //****************************************************************************                   
      
 
+
+
+
 // Open PHP script for sqlquery and copy male, female, total counter-increment
 
+
+
+
+
+//var arr = [];
 function gen_demo(id)
 {
 var querywithid = "http://hpraja2.people.uic.edu/mysqlgendercount.php?id="
@@ -215,12 +233,72 @@ d3.json(querywithid.concat(id), function(error, data) {
         male_cnt = +d.male_cnt;
 		female_cnt = +d.female_cnt;
 		total_cnt = +d.total_cnt;
+                console.log(total_cnt)
+                
+                arr = [male_cnt, female_cnt, (total_cnt - male_cnt - female_cnt)];
+               // var arr = Objects.keys(data).map(function(k){ return data[k]});
+                
+               // console.log(arr);
+                
+                
 		d3.select("#info").append("text").text("\n Male: " + male_cnt + " | Female " + female_cnt + " | Total: " + total_cnt );
 		
-		
+		//Width and height
+			var w = 300;
+			var h = 300;
+                        
+			//var dataset = [ 5, 10, 20, 45, 6, 25 ];
+
+			var outerRadius = w / 2;
+			var innerRadius = 0;
+			var arc = d3.svg.arc()
+                                    .innerRadius(innerRadius)
+                                    .outerRadius(outerRadius);
+			
+			var pie = d3.layout.pie();
+			
+			//Easy colors accessible via a 10-step ordinal scale
+			var color = d3.scale.category10();
+                        
+                        console.log(arr);
+			//Create SVG element
+			var svg = d3.select("#info")
+                                    .append("svg")
+                                    .attr("width", w)
+                                    .attr("height", h);
+
+			//Set up groups
+			var arcs = svg.selectAll("g.arc")
+                                    .data(pie(arr))
+                                    .enter()
+                                    .append("g")
+                                    .attr("class", "arc")
+                                    .attr("transform", "translate(" + outerRadius + "," + outerRadius + ")");
+
+			//Draw arc paths
+			arcs.append("path")
+			    .attr("fill", function(d, i) {
+			    	return color(i);
+			    })
+			    .attr("d", arc);
+			
+			//Labels
+			arcs.append("text")
+			    .attr("transform", function(d) {
+			    	return "translate(" + arc.centroid(d) + ")";
+			    })
+			    .attr("text-anchor", "middle")
+			    .text(function(d) {
+			    	return d.value;
+			    });                                      
+                                           
     });
 });	
 }
+
+
+	
+
                     
 //DO NOT DELETE - TEST POINTS 
 //         L.marker([23.0300, 72.5800]).addTo(map).bindPopup("This is where Hardik is from!<br/>City: Ahmedabad, India");
