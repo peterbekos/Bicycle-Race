@@ -137,6 +137,7 @@
                                         .text(this.name + " | Station ID: " + this.stationID + "\n");
 										gen_demo(this.stationID);
 										flow(this.stationID);
+										customer(this.stationID);
                                                                                 
                          // console.log(arr)                                                      
                                                              
@@ -297,7 +298,7 @@ d3.json(querywithid.concat(id), function(error, data) {
 });	
 }
 
-
+// query to get inflow and outflow //
 function flow(id)
 {
 var querywithid = "http://hpraja2.people.uic.edu/inflow_outflow.php?id="
@@ -312,7 +313,18 @@ d3.json(querywithid.concat(id), function(error, data) {
 });	
 }	
 
-                    
+// query to get customer and subscriber //
+function customer(id)
+{
+var querywithid = "http://hpraja2.people.uic.edu/customer.php?id="
+d3.json(querywithid.concat(id), function(error, data) {
+    data.forEach(function(d) {
+		Customers = +d.Customers;
+		Subscribers = +d.Subscribers;
+		d3.select("#info").append("text").html("</br> Customers: " + Customers + " | Subscribers " + Subscribers);
+    });
+});	
+}		   
 //DO NOT DELETE - TEST POINTS 
 //         L.marker([23.0300, 72.5800]).addTo(map).bindPopup("This is where Hardik is from!<br/>City: Ahmedabad, India");
 //         L.marker([33.7167, 73.0667]).addTo(map).bindPopup("This is where his Majesty, Shahbaz, was born!<br/>City: Islamabad, Pakistan");
