@@ -136,6 +136,7 @@
                                       d3.select("#info")
                                         .text(this.name + " | Station ID: " + this.stationID + "\n");
 										gen_demo(this.stationID);
+										flow(this.stationID);
                                                                                 
                          // console.log(arr)                                                      
                                                              
@@ -241,7 +242,7 @@ d3.json(querywithid.concat(id), function(error, data) {
                // console.log(arr);
                 
                 
-		d3.select("#info").append("text").text("\n Male: " + male_cnt + " | Female " + female_cnt + " | Total: " + total_cnt );
+		d3.select("#info").append("text").html("</br> Male: " + male_cnt + " | Female " + female_cnt + " | Total: " + total_cnt );
 		
 		//Width and height
 			var w = 300;
@@ -297,7 +298,19 @@ d3.json(querywithid.concat(id), function(error, data) {
 }
 
 
-	
+function flow(id)
+{
+var querywithid = "http://hpraja2.people.uic.edu/inflow_outflow.php?id="
+d3.json(querywithid.concat(id), function(error, data) {
+    data.forEach(function(d) {
+        InFlow = +d.InFlow;
+		OutFlow = +d.OutFlow;
+		d3.select("#info").append("text").html("</br> InFlow: " + InFlow + " | OutFlow " + OutFlow);
+		
+		
+    });
+});	
+}	
 
                     
 //DO NOT DELETE - TEST POINTS 
