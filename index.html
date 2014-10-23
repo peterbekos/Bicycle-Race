@@ -22,32 +22,57 @@
 				float:left; 
 				background-color:#330000
 			}
-			#info {
-				width: 35%;
-				height: 100%;
+			#infoOne {
+				width: 16.25%;
+				height: 50%;
 				float:left; 
-				background-color:teal
+				background-color:teal;
 			}
+                        #infoTwo {
+				width: 16.25%;
+				height: 50%;
+				float:left; 
+				background-color:pink;
+			}
+                        #infoThree {
+				width: 16.25%;
+				height: 50%;
+				float:left; 
+				background-color:teal;
+			}
+                        #infoFour{
+				width: 16.25%;
+				height: 50%;
+				float:left; 
+				background-color:pink;
+                        }
 			#calandar {
-				width: 30%;
-				height: 100%;
+				width: 65%;
+				height: 50%;
 				float:left; 
-				background-color:black
+				background-color:red
 			}
+                        
+                        
+                        
+                        
         
         myLayer {
             fill: Orange;
             stroke: Blue;           
             
         }
+
         </style>
         
     </head>
     <body>
        
         <div id="map"></div>
-	<div id="info"></div>
-        
+	<div id="infoOne"></div>
+        <div id="infoTwo"></div>
+        <div id="infoThree"></div>
+        <div id="infoFour"></div>
 	<div id="calandar"></div>
 	 <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
            
@@ -77,7 +102,7 @@
 //MAPPING CHICAGO COMMUNITIES OVERLAY
             var chicagoCommunitiesLayer = new L.LayerGroup();
             var myStyle = {
-           "color" : "teal",
+           "color" : "orange",
            "stroke": "#fff",
            "opacity" : "0.5",
            "weight" : "3"
@@ -95,6 +120,7 @@
           var divvyStationLayer = new L.LayerGroup();
           
           var arr =[];
+          //dataset = []; //array to store inflow outflow numbvers
           
            d3.json("data/divvy_stationswithID.json", function(error, json){
                
@@ -118,7 +144,7 @@
                    //scaling stationsCapacity array to set marker opacity
                    var max = d3.max(stationsCapacity);
                    var min = d3.min(stationsCapacity);        
-                   var scale = d3.scale.linear().domain([min, max]).range([0.6, 1]);
+                   var scale = d3.scale.linear().domain([min, max]).range([0.3, 1]);
                                
                    //Adding stations to map w/ pop-ups and, making the station markers responsive by 
                    //displaying name and id of statio in "info" div
@@ -135,9 +161,10 @@
                                       console.log(this.name);
                                       d3.select("#info")
                                         .text(this.name + " | Station ID: " + this.stationID + "\n");
+                                                                                customer(this.stationID);
 										gen_demo(this.stationID);
 										flow(this.stationID);
-										customer(this.stationID);
+										
                                                                                 
                          // console.log(arr)                                                      
                                                              
@@ -243,12 +270,12 @@ d3.json(querywithid.concat(id), function(error, data) {
                // console.log(arr);
                 
                 
-		d3.select("#info").append("text").html("</br> Male: " + male_cnt + " | Female " + female_cnt + " | Total: " + total_cnt );
+		d3.select("#infoTwo").append("text").html("</br> Male: " + male_cnt + " | Female " + female_cnt + " | Total: " + total_cnt );
 		
 		//Width and height
-			var w = 300;
-			var h = 300;
-                        
+			var w = 150;
+			var h = 150;
+                       
 			//var dataset = [ 5, 10, 20, 45, 6, 25 ];
 
 			var outerRadius = w / 2;
@@ -264,7 +291,7 @@ d3.json(querywithid.concat(id), function(error, data) {
                         
                         console.log(arr);
 			//Create SVG element
-			var svg = d3.select("#info")
+			var svg = d3.select("#infoTwo")
                                     .append("svg")
                                     .attr("width", w)
                                     .attr("height", h);
@@ -305,10 +332,60 @@ var querywithid = "http://hpraja2.people.uic.edu/inflow_outflow.php?id="
 d3.json(querywithid.concat(id), function(error, data) {
     data.forEach(function(d) {
         InFlow = +d.InFlow;
-		OutFlow = +d.OutFlow;
-		d3.select("#info").append("text").html("</br> InFlow: " + InFlow + " | OutFlow " + OutFlow);
-		
-		
+	OutFlow = +d.OutFlow; 
+  
+               var dataset = [InFlow, OutFlow]; 
+		d3.select("#infoFour").append("text").html("</br> InFlow: " + InFlow + " | OutFlow " + OutFlow);
+                
+             //Width and height
+			var w = 150;
+			var h = 150;
+                       
+			//var dataset = [ 5, 10, 20, 45, 6, 25 ];
+
+			var outerRadius = w / 2;
+			var innerRadius = 0;
+			var arc = d3.svg.arc()
+                                    .innerRadius(innerRadius)
+                                    .outerRadius(outerRadius);
+			
+			var pie = d3.layout.pie();
+			
+			//Easy colors accessible via a 10-step ordinal scale
+			var color = d3.scale.category10();
+                        
+                        console.log(dataset);
+			//Create SVG element
+			var svg = d3.select("#infoFour")
+                                    .append("svg")
+                                    .attr("width", w)
+                                    .attr("height", h);
+
+			//Set up groups
+			var arcs = svg.selectAll("g.arc")
+                                    .data(pie(dataset))
+                                    .enter()
+                                    .append("g")
+                                    .attr("class", "arc")
+                                    .attr("transform", "translate(" + outerRadius + "," + outerRadius + ")");
+
+			//Draw arc paths
+			arcs.append("path")
+			    .attr("fill", function(d, i) {
+			    	return color(i);
+			    })
+			    .attr("d", arc);
+			
+			//Labels
+			arcs.append("text")
+			    .attr("transform", function(d) {
+			    	return "translate(" + arc.centroid(d) + ")";
+			    })
+			    .attr("text-anchor", "middle")
+			    .text(function(d) {
+			    	return d.value;
+			    });                         
+                
     });
 });	
 }	
@@ -321,7 +398,58 @@ d3.json(querywithid.concat(id), function(error, data) {
     data.forEach(function(d) {
 		Customers = +d.Customers;
 		Subscribers = +d.Subscribers;
-		d3.select("#info").append("text").html("</br> Customers: " + Customers + " | Subscribers " + Subscribers);
+                var dataset = [Customers, Subscribers]; 
+		d3.select("#infoThree").append("text").html("</br> Customers: " + Customers + " | Subscribers " + Subscribers);
+                
+                //Width and height
+			var w = 150;
+			var h = 150;
+                       
+			//var dataset = [ 5, 10, 20, 45, 6, 25 ];
+
+			var outerRadius = w / 2;
+			var innerRadius = 0;
+			var arc = d3.svg.arc()
+                                    .innerRadius(innerRadius)
+                                    .outerRadius(outerRadius);
+			
+			var pie = d3.layout.pie();
+			
+			//Easy colors accessible via a 10-step ordinal scale
+			var color = d3.scale.category10();
+                        
+                        console.log(dataset);
+			//Create SVG element
+			var svg = d3.select("#infoThree")
+                                    .append("svg")
+                                    .attr("width", w)
+                                    .attr("height", h);
+
+			//Set up groups
+			var arcs = svg.selectAll("g.arc")
+                                    .data(pie(dataset))
+                                    .enter()
+                                    .append("g")
+                                    .attr("class", "arc")
+                                    .attr("transform", "translate(" + outerRadius + "," + outerRadius + ")");
+
+			//Draw arc paths
+			arcs.append("path")
+			    .attr("fill", function(d, i) {
+			    	return color(i);
+			    })
+			    .attr("d", arc);
+			
+			//Labels
+			arcs.append("text")
+			    .attr("transform", function(d) {
+			    	return "translate(" + arc.centroid(d) + ")";
+			    })
+			    .attr("text-anchor", "middle")
+			    .text(function(d) {
+			    	return d.value;
+			    });                         
+                
     });
 });	
 }		   
