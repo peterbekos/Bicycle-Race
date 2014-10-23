@@ -448,7 +448,31 @@ d3.json(querywithid.concat(id), function(error, data) {
 			    .attr("text-anchor", "middle")
 			    .text(function(d) {
 			    	return d.value;
-			    });                         
+			    });
+				
+			
+			var barMargin = 1;
+			var svgCal = d3.select("#calendar")
+				.append("svg")
+				.attr("width", w)
+				.attr("height", h);
+			var bars = svgCal.selectAll("rect")
+				.data(dataset)
+				.enter()
+				.append("rect")
+				.attr("x", function(d, i) {
+					return i * (w / dataset.length);
+				})
+				.attr("y", function(d) {
+					return h - (d / 50);
+				})
+				.attr("width", w / dataset.length - barMargin)
+				.attr("height", function(d) {
+					return d / 50;
+				})
+				.attr("fill", function(d) {
+					return "rgb(0, 0, " + (d*8) + ")"; 
+				});
                 
     });
 });	
