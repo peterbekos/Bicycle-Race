@@ -158,6 +158,10 @@
 			marker["stationID"] = stationsInfo[i][4];
 						
                         marker.on('click', function(e) {
+									d3.select("#infoOne").select("svg").remove();
+									d3.select("#infoTwo").select("svg").remove();
+									d3.select("#infoThree").select("svg").remove();
+									d3.select("#infoFour").select("svg").remove();
                                       console.log(this.name);
                                       d3.select("#info")
                                         .text(this.name + " | Station ID: " + this.stationID + "\n");
