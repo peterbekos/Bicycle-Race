@@ -79,7 +79,7 @@
          <script>
 //***************************************************************************************                
 //Custom + Dynamic Icons                 
-                
+//Not in use yet. Aren't pinning properly
             var myIcon = L.icon({
                 iconUrl: 'divvy-icon.png',
                 iconSize: [25, 25],
@@ -88,16 +88,20 @@
                 shadowSize: [68, 95],
                 shadowAnchor: [22, 94]
             });
-                           
+               
+            var myIconTwo  = L.icon({
+                iconUrl: 'Winnie_The_Pooh.png',
+                iconSize: [25, 25],
+                iconAnchor: [22, 94],
+                popupAnchor: [-10,-85],
+                shadowSize: [68, 95],
+                shadowAnchor: [22, 94]
+            });
                      
           //Define quantize scale to sort data values into buckets of color
-			var color = d3.scale.quantize()
-				      .range(["rgb(237,248,233)","rgb(186,228,179)","rgb(116,196,118)","rgb(49,163,84)","rgb(0,109,44)"]);
-	 //Colors taken from colorbrewer.js, included in the D3 download
+//			var color = d3.scale.quantize()
+//				      .range(["rgb(237,248,233)","rgb(186,228,179)","rgb(116,196,118)","rgb(49,163,84)","rgb(0,109,44)"]);
 
-//        var max = d3.max(arr);
-//          var scale = d3.scale.linear().domain([15, 25]).range([0, 1]);
-//          
 //***************************************************************************************                
 //MAPPING CHICAGO COMMUNITIES OVERLAY
             var chicagoCommunitiesLayer = new L.LayerGroup();
@@ -120,13 +124,17 @@
           var divvyStationLayer = new L.LayerGroup();
           
           var arr =[];
-          //dataset = []; //array to store inflow outflow numbvers
           
-           d3.json("data/divvy_stationswithID.json", function(error, json){
+          
+           d3.json("Data/divvy_stationswithID.json", function(error, json){
+               d3.csv("Data/popularity.csv", function(popular){
+                   
                
+               var popularity = []; //array to store total of inflow+outflow from every station
+     
                var data = json.DivvyStations;
                var stationsInfo = [];
-               var stationsCapacity = [];
+               
                //Reading Station info into array
                for(var i = 0; i < data.length; i++)
                    {
@@ -135,28 +143,37 @@
                        var name = (data[i].name);
                        var dcapacity = parseInt(data[i].dpcapacity);
                        var stationID = parseInt(data[i].id);
-                       
-                      stationsInfo[i] = [name, lat, lon, dcapacity, stationID];
-                      stationsCapacity[i] = [dcapacity]; //seperate array needed to scale for opacity
-                                            
+                       var popOfStation = parseFloat(popular[i].Total);
+                      //all information about specefic stations stored here 
+                      stationsInfo[i] = [name, lat, lon, dcapacity, stationID, popOfStation];
+                      popularity[i] = popOfStation; //seperate array needed to scale for opacity                                           
                    };
-                   
-                   //scaling stationsCapacity array to set marker opacity
-                   var max = d3.max(stationsCapacity);
-                   var min = d3.min(stationsCapacity);        
+                  
+                   //scaling popularity array to set marker opacity
+                   var max = d3.max(popularity);
+                   var min = d3.min(popularity);        
                    var scale = d3.scale.linear().domain([min, max]).range([0.3, 1]);
-                               
+                   
+                   
+                   console.log("totals: ", popularity);
+                   console.log("max: ", max);
+                   console.log("min: ", min);
                    //Adding stations to map w/ pop-ups and, making the station markers responsive by 
                    //displaying name and id of statio in "info" div
+                   
+                  // var marker;
                    for(var i = 0; i < data.length; i++)
                    {
                    //adding stations to a layerGroup instead of straigh to the map for toggabiity (Not a word, apparently)
-                   var marker = L.marker([stationsInfo[i][1], stationsInfo[i][2]],{/*icon: myIcon, */opacity: (scale(stationsInfo[i][3])),'marker-color': '#ff8888', riseOnHover: true})
-                                 .addTo(divvyStationLayer).bindPopup(stationsInfo[i][0] + "<br/>Capacity: " + stationsInfo[i][3]);
-                         
+
+                                   var marker = L.marker([stationsInfo[i][1], stationsInfo[i][2]],{/*icon: myIcon,*/ opacity: (scale(stationsInfo[i][5])),'marker-color': '#ff8888', riseOnHover: true})
+                                         .addTo(divvyStationLayer).bindPopup(stationsInfo[i][0] + "<br/>Capacity: " + stationsInfo[i][3]);
+
+            
                         marker["name"] = stationsInfo[i][0];
 			marker["stationID"] = stationsInfo[i][4];
-						
+                        
+                        //on-click function which cleans out previously appended graphs from every affected div
                         marker.on('click', function(e) {
 									d3.select("#infoOne").select("svg").remove();
 									d3.select("#infoTwo").select("svg").remove();
@@ -167,20 +184,13 @@
                                         .text(this.name + " | Station ID: " + this.stationID + "\n");
                                                                                 customer(this.stationID);
 										gen_demo(this.stationID);
-										flow(this.stationID);
-										
-                                                                                
-                         // console.log(arr)                                                      
-                                                             
+										flow(this.stationID);                  
 					});
 					   
+                    
                    }
-                   
-                          
-//Starting pie chart 
-			
 					
-               
+               });//end of pupularity.csv read-in
            });//end of divvysatiionswithID.json read-in
 //*************************************************************************************** 
 //MAP INTERACTIVITY               

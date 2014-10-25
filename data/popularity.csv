@@ -1,4 +1,4 @@
-station_id,popularity,popularity,Total
+station_id,outflow,inflow,Total
 5,4871,4771,9642
 13,4105,3509,7614
 14,1389,1464,2853
