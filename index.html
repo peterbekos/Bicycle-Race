@@ -126,8 +126,75 @@
           var arr =[];
           
           
-           d3.json("data/divvy_stationswithID.json", function(error, json){
-               d3.csv("data/popularity.csv", function(popular){
+           d3.json("Data/divvy_stationswithID.json", function(error, json){
+               d3.csv("Data/popularity.csv", function(popular){
+                   d3.csv("Data/Overall.csv", function(overall){
+                      //**********************************************************
+                      //Width and height
+			var w = 150;
+			var h = 150;
+                       
+			//var dataset = [ 5, 10, 20, 45, 6, 25 ];
+                        var totalMale = parseFloat(overall[0].Male);
+                        var totalFemale = parseFloat(overall[0].Female);
+                        var totalUnknown = parseFloat(overall[0].Unknown);
+                        var maleFemaleUnknown = [totalMale, totalFemale, totalUnknown];
+                        console.log(maleFemaleUnknown);
+
+			var outerRadius = w / 2;
+			var innerRadius = 0;
+			var arc = d3.svg.arc()
+                                    .innerRadius(innerRadius)
+                                    .outerRadius(outerRadius);
+			
+			var pie = d3.layout.pie();
+			
+			//Easy colors accessible via a 10-step ordinal scale
+			var color = d3.scale.category10();
+                        
+                      //  console.log(arr);
+			//Create SVG element
+			var svg = d3.select("#infoTwo")
+                                    .append("svg")
+                                    .attr("width", w)
+                                    .attr("height", h);
+                         
+
+			//Set up groups
+			var arcs = svg.selectAll("g.arc")
+                                    .data(pie(maleFemaleUnknown))
+                                    .enter()
+                                    .append("g")
+                                    .attr("class", "arc")
+                                    .attr("transform", "translate(" + outerRadius + "," + outerRadius + ")");
+                                    
+
+			//Draw arc paths
+			arcs.append("path")
+			    .attr("fill", function(d, i) {
+			    	return color(i);
+			    })
+			    .attr("d", arc);
+			
+			//Labels
+			arcs.append("text")
+			    .attr("transform", function(d) {
+			    	return "translate(" + arc.centroid(d) + ")";
+			    })
+			    .attr("text-anchor", "middle")
+			    .text(function(d) {
+			    	return d.value;
+			    });
+                        
+                      //  d3.select("svg").transform(20,20);
+                        d3.select("#infoTwo").append("text").html("<br/> MALE VS. FEMALE" + "</br>Male: " + totalMale
+                                                                    + "</br>Female: " + totalFemale + "</br>Unknown: " + totalUnknown );
+                                                           
+                      //  translate(svg, 20 , 20 );
+                      
+                      
+                            
+                        //**********************************************************
                    
                
                var popularity = []; //array to store total of inflow+outflow from every station
@@ -166,8 +233,8 @@
                    {
                    //adding stations to a layerGroup instead of straigh to the map for toggabiity (Not a word, apparently)
 
-                                   var marker = L.marker([stationsInfo[i][1], stationsInfo[i][2]],{/*icon: myIcon,*/ opacity: (scale(stationsInfo[i][5])),'marker-color': '#ff8888', riseOnHover: true})
-                                         .addTo(divvyStationLayer).bindPopup(stationsInfo[i][0] + "<br/>Capacity: " + stationsInfo[i][3]);
+                        var marker = L.marker([stationsInfo[i][1], stationsInfo[i][2]],{/*icon: myIcon,*/ opacity: (scale(stationsInfo[i][5])),'marker-color': '#ff8888', riseOnHover: true})
+                              .addTo(divvyStationLayer).bindPopup(stationsInfo[i][0] + "<br/>Capacity: " + stationsInfo[i][3]);
 
             
                         marker["name"] = stationsInfo[i][0];
@@ -175,21 +242,30 @@
                         
                         //on-click function which cleans out previously appended graphs from every affected div
                         marker.on('click', function(e) {
-									d3.select("#infoOne").select("svg").remove();
-									d3.select("#infoTwo").select("svg").remove();
-									d3.select("#infoThree").select("svg").remove();
-									d3.select("#infoFour").select("svg").remove();
-                                      console.log(this.name);
-                                      d3.select("#info")
-                                        .text(this.name + " | Station ID: " + this.stationID + "\n");
-                                                                                customer(this.stationID);
-										gen_demo(this.stationID);
-										flow(this.stationID);                  
-					});
+                                d3.select("#infoOne").select("svg").remove();
+                                d3.select("#infoTwo").select("svg").remove();
+                                d3.select("#infoThree").select("svg").remove();
+                                d3.select("#infoFour").select("svg").remove();
+                                
+                                d3.select("#infoOne").select("text").remove();
+                                d3.select("#infoTwo").select("text").remove();
+                                d3.select("#infoThree").select("text").remove();
+                                d3.select("#infoFour").select("text").remove();
+                                
+                                
+                                console.log(this.name);
+                                d3.select("#info")
+                                  .text(this.name + " | Station ID: " + this.stationID + "\n");
+                                customer(this.stationID);
+                                gen_demo(this.stationID);
+                                flow(this.stationID);                  
+                                  });
 					   
                     
                    }
-					
+                   
+                   
+		});//end of overall read-in			
                });//end of pupularity.csv read-in
            });//end of divvysatiionswithID.json read-in
 //*************************************************************************************** 
@@ -257,16 +333,22 @@ L.control.layers(baseLayers, overlays).addTo(map);
 //****************************************************************************                   
      
 
+//Transformation Function
+// translate svg element
+function translate( _element , _x , _y )
+{
+  var transform = _element.transform.baseVal.getItem(0);   
+  var mat = transform.matrix;   
 
+  mat = mat.translate( _x, _y );  
+  transform.setMatrix( mat );
 
+}
 
+//****************************************************************************
+//PHP SCRIPTS 
 // Open PHP script for sqlquery and copy male, female, total counter-increment
 
-
-
-
-
-//var arr = [];
 function gen_demo(id)
 {
 var querywithid = "http://hpraja2.people.uic.edu/mysqlgendercount.php?id="
@@ -279,18 +361,12 @@ d3.json(querywithid.concat(id), function(error, data) {
                 console.log(total_cnt)
                 
                 arr = [male_cnt, female_cnt, (total_cnt - male_cnt - female_cnt)];
-               // var arr = Objects.keys(data).map(function(k){ return data[k]});
-                
-               // console.log(arr);
-                
-                
-		d3.select("#infoTwo").append("text").html("</br> Male: " + male_cnt + " | Female " + female_cnt + " | Total: " + total_cnt );
+              
 		
 		//Width and height
 			var w = 150;
 			var h = 150;
-                       
-			//var dataset = [ 5, 10, 20, 45, 6, 25 ];
+                    
 
 			var outerRadius = w / 2;
 			var innerRadius = 0;
@@ -333,7 +409,11 @@ d3.json(querywithid.concat(id), function(error, data) {
 			    .attr("text-anchor", "middle")
 			    .text(function(d) {
 			    	return d.value;
-			    });                                      
+			    });     
+                
+               //appending text info 
+               d3.select("#infoTwo").append("text").html("</br> Male: " + male_cnt + "</br> Female: " + female_cnt + "</br>Unknown: " + (total_cnt - male_cnt - female_cnt) + "</br> Total: " + total_cnt + "</br>");
+
                                            
     });
 });	
@@ -348,8 +428,8 @@ d3.json(querywithid.concat(id), function(error, data) {
         InFlow = +d.InFlow;
 	OutFlow = +d.OutFlow; 
   
-               var dataset = [InFlow, OutFlow]; 
-		d3.select("#infoFour").append("text").html("</br> InFlow: " + InFlow + " | OutFlow " + OutFlow);
+             
+             var dataset = [InFlow, OutFlow]; 
                 
              //Width and height
 			var w = 150;
@@ -398,7 +478,11 @@ d3.json(querywithid.concat(id), function(error, data) {
 			    .attr("text-anchor", "middle")
 			    .text(function(d) {
 			    	return d.value;
-			    });                         
+			    });
+                            
+                //appending text info
+                d3.select("#infoFour").append("text").html("</br> InFlow: " + InFlow + "</br> OutFlow: " + OutFlow + "</br> Total: " + (InFlow + OutFlow));
+
                 
     });
 });	
@@ -413,8 +497,7 @@ d3.json(querywithid.concat(id), function(error, data) {
 		Customers = +d.Customers;
 		Subscribers = +d.Subscribers;
                 var dataset = [Customers, Subscribers]; 
-		d3.select("#infoThree").append("text").html("</br> Customers: " + Customers + " | Subscribers " + Subscribers);
-                
+		//Making pie chart                
                 //Width and height
 			var w = 150;
 			var h = 150;
@@ -487,6 +570,8 @@ d3.json(querywithid.concat(id), function(error, data) {
 				.attr("fill", function(d) {
 					return "rgb(0, 0, " + (d*8) + ")"; 
 				});
+            //appending text info
+            d3.select("#infoThree").append("text").html("</br> Customers: " + Customers + "</br>Subscribers: " + Subscribers + "</br>Total Users: " + (Customers + Subscribers));
                 
     });
 });	
