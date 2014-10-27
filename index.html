@@ -180,13 +180,39 @@
                         var totalFemale = parseFloat(overall[0].Female);
                         var totalUnknown = parseFloat(overall[0].Unknown);
                         var maleFemaleUnknown = [totalMale, totalFemale, totalUnknown];
-             
-						var colors = ["#666666", "#999999", "#AAAAAA"];
+                        
+                        var colors = ["#FF9999", "#99FF99", "#9999FF"];
+                        
                         make_pie_charts(maleFemaleUnknown, "infoTwo", colors);
                         
                         d3.select("#infoTwo").append("text").html("<br/> MALE VS. FEMALE" + "</br>Male: " + totalMale
                                                                     + "</br>Female: " + totalFemale + "</br>Unknown: " + totalUnknown );
                                                            
+                          
+                        //making total customers vs subscirbers pie chart
+                        var totalSubscribers = parseFloat(overall[0].Subscriber);
+                        var totalCustomers = parseFloat(overall[0].Customer);
+                        var totalSubCus = [totalSubscribers, totalCustomers];
+                        
+                        var colors = ["#666666", "#999999", "#AAAAAA"];
+                        make_pie_charts(totalSubCus, "infoThree", colors);
+                        
+                        d3.select("#infoThree").append("text").html("<br/> Customers VS. Subscribers" + "</br>Customers " + totalCustomers
+                                                                    + "</br>Subscriber " + totalSubscribers);
+                          
+                        
+                        
+                        //making a total inflow vs. outflows chart
+                        var totalInflows = parseFloat(overall[0].Inflow);
+                        var totalOutflows = parseFloat(overall[0].Outflow);
+                        var totalInOut = [totalInflows, totalOutflows];
+                        
+                        var colors = ["#FFFF99", "#FF99FF", "#99FFFF"];
+                        make_pie_charts(totalInOut, "infoFour", colors);
+                        
+                        d3.select("#infoFour").append("text").html("<br/> Inflow VS. Outlflow" + "</br>Inflows " + totalInflows
+                                                                    + "</br>Outflows " + totalOutflows);
+                         
                         
                         //Inflow,Outflow,Customer,Subscriber,age1020,age2130,age3140,age4150,age5160,age6170,age7180,age8190
                         //Making total customers vs. subscribers pie chart
@@ -626,7 +652,7 @@ d3.json(querywithid.concat(id), function(error, data) {
              
              var dataset = [InFlow, OutFlow]; 
              
-			 var colors = ["#FFFF99", "#FF99FF", "#99FFFF"];
+	     var colors = ["#FFFF99", "#FF99FF", "#99FFFF"];
              make_pie_charts(dataset, "infoFour", colors);
                        
                 //appending text info
@@ -647,7 +673,7 @@ d3.json(querywithid.concat(id), function(error, data) {
 		Subscribers = +d.Subscribers;
                 var dataset = [Customers, Subscribers]; 
                 
-				var colors = ["#666666", "#888888", "#AAAAAA"];
+		var colors = ["#666666", "#888888", "#AAAAAA"];
                 make_pie_charts(dataset, "infoThree", colors);
                 //appending text info
               d3.select("#infoThree").append("text").html("</br> Customers: " + Customers + "</br>Subscribers: " + Subscribers + "</br>Total Users: " + (Customers + Subscribers));
