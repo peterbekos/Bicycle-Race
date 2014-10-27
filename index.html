@@ -181,7 +181,8 @@
                         var totalUnknown = parseFloat(overall[0].Unknown);
                         var maleFemaleUnknown = [totalMale, totalFemale, totalUnknown];
              
-                        make_pie_charts(maleFemaleUnknown, "infoTwo");
+						var colors = ["#666666", "#999999", "#AAAAAA"];
+                        make_pie_charts(maleFemaleUnknown, "infoTwo", colors);
                         
                         d3.select("#infoTwo").append("text").html("<br/> MALE VS. FEMALE" + "</br>Male: " + totalMale
                                                                     + "</br>Female: " + totalFemale + "</br>Unknown: " + totalUnknown );
@@ -490,7 +491,7 @@ function translate( _element , _x , _y )
 
 }
 //Function to make Pie Charts
-function make_pie_charts(dataset, location)
+function make_pie_charts(dataset, location, colorArray)
 {
    //Width and height
 			var w = 150;
@@ -529,7 +530,7 @@ function make_pie_charts(dataset, location)
 			//Draw arc paths
 			arcs.append("path")
 			    .attr("fill", function(d, i) {
-			    	return color(i);
+			    	return colorArray[i];
 			    })
 			    .attr("d", arc);
 			
@@ -602,7 +603,8 @@ d3.json(querywithid.concat(id), function(error, data) {
                 
                 arr = [male_cnt, female_cnt, (total_cnt - male_cnt - female_cnt)];
               
-		make_pie_charts(arr, "infoTwo");
+		var colors = ["#FF9999", "#99FF99", "#9999FF"];
+		make_pie_charts(arr, "infoTwo", colors);
 
                //appending text info 
                d3.select("#infoTwo").append("text").html("</br> Male: " + male_cnt + "</br> Female: " + female_cnt + "</br>Unknown: " + (total_cnt - male_cnt - female_cnt) + "</br> Total: " + total_cnt + "</br>");
@@ -624,7 +626,8 @@ d3.json(querywithid.concat(id), function(error, data) {
              
              var dataset = [InFlow, OutFlow]; 
              
-             make_pie_charts(dataset, "infoFour");
+			 var colors = ["#FFFF99", "#FF99FF", "#99FFFF"];
+             make_pie_charts(dataset, "infoFour", colors);
                        
                 //appending text info
                 d3.select("#infoFour").append("text").html("</br> InFlow: " + InFlow + "</br> OutFlow: " + OutFlow + "</br> Total: " + (InFlow + OutFlow));
@@ -644,7 +647,8 @@ d3.json(querywithid.concat(id), function(error, data) {
 		Subscribers = +d.Subscribers;
                 var dataset = [Customers, Subscribers]; 
                 
-                make_pie_charts(dataset, "infoThree");
+				var colors = ["#666666", "#888888", "#AAAAAA"];
+                make_pie_charts(dataset, "infoThree", colors);
                 //appending text info
               d3.select("#infoThree").append("text").html("</br> Customers: " + Customers + "</br>Subscribers: " + Subscribers + "</br>Total Users: " + (Customers + Subscribers));
  });
