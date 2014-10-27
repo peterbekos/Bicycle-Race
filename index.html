@@ -50,7 +50,7 @@
 				width: 65%;
 				height: 50%;
 				float:left; 
-				background-color:red
+				background-color:teal
 			}
                         
                         
@@ -62,17 +62,29 @@
             stroke: Blue;           
             
         }
+        
+  .Barchart .label {
+    font-size: 10px;
+  }
+  .Barchart .ylabels .tick line {
+    fill: none;
+    stroke: #222;
+    stroke-width: 1px;
+    shape-rendering: crispEdges;
+  }
+  .Barchart path.domain {
+    fill: none;
+    stroke: #222;
+    stroke-width: 1px;
+    shape-rendering: crispEdges;
+  }
+  .Barchart .bars rect.bar {
+    fill: #97E8A2;
+  }
 
         /*added style elements for bar chart*/ 
-.chart rect {
-  fill: steelblue;
-}
 
-.chart text {
-  fill: white;
-  font: 10px sans-serif;
-  text-anchor: end;
-}
+        
 
 
         </style>
@@ -129,8 +141,14 @@
            var myLayer = L.geoJson(geojsonFeature,{
                style: myStyle
            } ).addTo(chicagoCommunitiesLayer);
-                          
+           
+           
+           
+           
  //***************************************************************************************          
+     
+     
+          
  //stationswithID file is opened and mapped here         
           
           var divvyStationLayer = new L.LayerGroup();
@@ -138,9 +156,24 @@
           var arr =[];
           
           
+          
+          
+          
+          
+          
+    
+          
+          
            d3.json("data/divvy_stationswithID.json", function(error, json){
                d3.csv("data/popularity.csv", function(popular){
                    d3.csv("data/Overall.csv", function(overall){
+
+
+                       
+                       
+                       
+                       
+                       
                       //**********************************************************
                       //Making Total Male vs. Female Pie Chart
                         var totalMale = parseFloat(overall[0].Male);
@@ -156,24 +189,24 @@
                         
                         //Inflow,Outflow,Customer,Subscriber,age1020,age2130,age3140,age4150,age5160,age6170,age7180,age8190
                         //Making total customers vs. subscribers pie chart
-                        var totalCustomers = parseFloat(overall[0].Customer);
-                        var totalSubscribers = parseFloat(overall[0].Subscriber);
-                        var totalUsers = [totalCustomers, totalSubscribers];
-                        
-                        make_pie_charts(totalUsers, "infoOne");
-                        
-                        var age1020Bucket = parseFloat(overall[0].age1020);
-                        var age2130Bucket = parseFloat(overall[0].age2130);
-                        var age3140Bucket = parseFloat(overall[0].age3140);
-                        var age4150Bucket = parseFloat(overall[0].age4150);
-                        var age5160Bucket = parseFloat(overall[0].age5160);
-                        var age6170Bucket = parseFloat(overall[0].age6170);
-                        var age7180Bucket = parseFloat(overall[0].age7180);
-                        var age8190Bucket = parseFloat(overall[0].age8190);
-                        
-                        var totalAge = [age1020Bucket, age2130Bucket, age3140Bucket, age4150Bucket, age5160Bucket, age6170Bucket, age7180Bucket, age8190Bucket];
-                        
-                        making_bar_cahrts(totalAge, "calendar");
+//                        var totalCustomers = parseFloat(overall[0].Customer);
+//                        var totalSubscribers = parseFloat(overall[0].Subscriber);
+//                        var totalUsers = [totalCustomers, totalSubscribers];
+//                        
+//                        make_pie_charts(totalUsers, "infoOne");
+//                        
+//                        var age1020Bucket = parseFloat(overall[0].age1020);
+//                        var age2130Bucket = parseFloat(overall[0].age2130);
+//                        var age3140Bucket = parseFloat(overall[0].age3140);
+//                        var age4150Bucket = parseFloat(overall[0].age4150);
+//                        var age5160Bucket = parseFloat(overall[0].age5160);
+//                        var age6170Bucket = parseFloat(overall[0].age6170);
+//                        var age7180Bucket = parseFloat(overall[0].age7180);
+//                        var age8190Bucket = parseFloat(overall[0].age8190);
+//                        
+//                        var totalAge = [age1020Bucket, age2130Bucket, age3140Bucket, age4150Bucket, age5160Bucket, age6170Bucket, age7180Bucket, age8190Bucket];
+//                        
+//                        making_bar_cahrts(totalAge, "calendar");
                       
                             
                         //**********************************************************
@@ -312,7 +345,137 @@ L.control.layers(baseLayers, overlays).addTo(map);
 //                        lineJoin: 'round'
 //                       }
 //                   ).addTo(map);
-//****************************************************************************                   
+//****************************************************************************  
+
+
+
+
+var race = [
+        {
+        "Race": "Age 11 - 20",
+        "Frequency": 1707
+        },  
+        {
+        "Race": "Age 21 - 30",
+        "Frequency": 118538
+        },
+        {
+        "Race": "Age 31 - 40",
+	"Frequency": 134920
+        },
+        {
+        "Race": "Age 41 - 50",
+	"Frequency": 69653
+        },
+        {
+        "Race": "Age 51 - 60",
+	"Frequency": 38209
+        },
+        {
+        "Race": "Age 61 - 70",
+	"Frequency": 9874
+        },
+        {
+        "Race": "Age 71 - 80",
+	"Frequency": 801
+        },
+        {
+        "Race": "Age 81 - 90",
+	"Frequency": 52
+        }
+    ];	
+	
+		// bar graph
+	
+		var margin = {top: 20, right: 20, bottom: 30, left: 40},
+		width = 960 - margin.left - margin.right,
+		height = 350 - margin.top - margin.bottom;
+    
+		var x = d3.scale.ordinal()
+		.rangeRoundBands([0, width], .1);
+		
+		var y = d3.scale.linear()
+		.rangeRound([height, 0]);
+		2
+		var color = d3.scale.ordinal()
+		.range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+		
+		var xAxis = d3.svg.axis()
+		.scale(x)
+		.orient("bottom");
+		
+		var yAxis = d3.svg.axis()
+		.scale(y)
+		.orient("left")
+		.tickFormat(d3.format(".2s"));
+		
+		var svg = d3.select("#calendar").append("svg")
+		.attr("width", width + margin.left + margin.right)
+		.attr("height", height + margin.top + margin.bottom)
+		.append("g")
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+		
+		color.domain(d3.keys(race[0]).filter(function(key) { return key !== "Race"; }));
+
+race.forEach(function(d) {
+var y0 = 0;
+d.ages = color.domain().map(function(name) { return {name: name, y0: y0, y1: y0 += +d[name]}; });
+d.total = d.ages[d.ages.length - 1].y1;
+});
+
+
+x.domain(race.map(function(d) { return d.Race; }));
+y.domain([0, d3.max(race, function(d) { return d.total; })]);
+
+ svg.append("g")
+  .attr("class", "x axis")
+  .attr("transform", "translate(0," + height + ")")
+  .call(xAxis);
+
+ svg.append("g")
+  .attr("class", "y axis")
+  .call(yAxis)
+ .append("text")
+  .attr("transform", "rotate(-90)")
+  .attr("y", 6)
+  .attr("dy", ".71em")
+  .style("text-anchor", "end")
+  .text("Frequency");
+
+ var race = svg.selectAll(".race")
+  .data(race)
+ .enter().append("g")
+  .attr("class", "g")
+  .attr("transform", function(d) { return "translate(" + x(d.Race) + ",0)"; });
+
+ race.selectAll("rect")
+  .data(function(d) { return d.ages; })
+ .enter().append("rect")
+  .attr("width", x.rangeBand()) 
+  .attr("y", function(d) { return y(d.y1); })
+  .attr("height", function(d) { return y(d.y0) - y(d.y1); })
+  .style("fill", function(d) { return color(d.name); });
+
+ var legend = svg.selectAll(".legend")
+  .data(color.domain().slice().reverse())
+ .enter().append("g")
+  .attr("class", "legend")
+  .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+  legend.append("rect")
+  .attr("x", width - 18)
+  .attr("width", 18)
+  .attr("height", 18)
+  .style("fill", color);
+
+  legend.append("text")
+  .attr("x", width - 24)
+  .attr("y", 9)
+  .attr("dy", ".35em")
+  .style("text-anchor", "end")
+  .text(function(d) { return d; });
+		
+ //*************************************************************************************** 
 //FUNCTIONS
 
 //Transformation Function
