@@ -52,6 +52,9 @@
 				float:left; 
 				background-color:teal
 			}
+			p { 
+				margin: 0; 
+			}
                         
                         
                         
@@ -543,8 +546,7 @@ function make_pie_charts(dataset, location, colorArray)
 			    .text(function(d) {
 			    	return d.value;
 			    });
-
-
+							
 }
 
 function making_bar_cahrts(dataset, location)
@@ -605,10 +607,11 @@ d3.json(querywithid.concat(id), function(error, data) {
               
 		var colors = ["#FF9999", "#99FF99", "#9999FF"];
 		make_pie_charts(arr, "infoTwo", colors);
-
-               //appending text info 
-               d3.select("#infoTwo").append("text").html("</br> Male: " + male_cnt + "</br> Female: " + female_cnt + "</br>Unknown: " + (total_cnt - male_cnt - female_cnt) + "</br> Total: " + total_cnt + "</br>");
-
+		d3.select("#infoTwo").append("text").html("<p style=\"background-color:" + colors[0] + "\">Male:" + male_cnt + "</p>");
+		d3.select("#infoTwo").append("text").html("<p style=\"background-color:" + colors[1] + "\">Female:" + female_cnt + "</p>");
+		d3.select("#infoTwo").append("text").html("<p style=\"background-color:" + colors[2] + "\">Unknown:" + (total_cnt - male_cnt - female_cnt) + "</p>");
+		d3.select("#infoTwo").append("text").html("<p>Total:" + total_cnt + "</p>");
+				//appending text info 
                                            
     });
 });	
@@ -628,10 +631,12 @@ d3.json(querywithid.concat(id), function(error, data) {
              
 			 var colors = ["#FFFF99", "#FF99FF", "#99FFFF"];
              make_pie_charts(dataset, "infoFour", colors);
+			 
+			d3.select("#infoFour").append("text").html("<p style=\"background-color:" + colors[0] + "\">InFlow:" + male_cnt + "</p>");
+			d3.select("#infoFour").append("text").html("<p style=\"background-color:" + colors[1] + "\">OutFlow:" + female_cnt + "</p>");
+			d3.select("#infoFour").append("text").html("<p>Total:" + (InFlow + OutFlow) + "</p>");
                        
                 //appending text info
-                d3.select("#infoFour").append("text").html("</br> InFlow: " + InFlow + "</br> OutFlow: " + OutFlow + "</br> Total: " + (InFlow + OutFlow));
-
                 
     });
 });	
@@ -649,8 +654,11 @@ d3.json(querywithid.concat(id), function(error, data) {
                 
 				var colors = ["#666666", "#888888", "#AAAAAA"];
                 make_pie_charts(dataset, "infoThree", colors);
+				
+				d3.select("#infoThree").append("text").html("<p style=\"background-color:" + colors[0] + "\">Customers:" + Customers + "</p>");
+				d3.select("#infoThree").append("text").html("<p style=\"background-color:" + colors[1] + "\">Subscribers:" + Subscribers + "</p>");
+				d3.select("#infoThree").append("text").html("<p>Total:" + (Customers + Subscribers) + "</p>");
                 //appending text info
-              d3.select("#infoThree").append("text").html("</br> Customers: " + Customers + "</br>Subscribers: " + Subscribers + "</br>Total Users: " + (Customers + Subscribers));
  });
 });	
 }		   
