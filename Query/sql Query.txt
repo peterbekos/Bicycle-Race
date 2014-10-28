@@ -1,0 +1,55 @@
+SQL QUERY
+
+//Year
+SELECT
+    MONTH(startdate),
+    DAY(startdate),
+    COUNT(`trip_id`) 
+FROM  `divvy_trips_distances` 
+GROUP BY 
+    YEAR(startdate), 
+    MONTH(startdate),
+    DAY(startdate),
+    HOUR(startdate)
+
+
+//number of bikes out by day of the week
+SELECT WEEKDAY(startdate) as wd,  count(`trip_id`)  
+FROM  `divvy_trips_distances` 
+WHERE `from_station_id` = ' 42' 
+GROUP BY wd
+
+// number of bikes out by day
+SELECT DAY( startdate ) AS d, COUNT(`trip_id` ) 
+FROM  `divvy_trips_distances` 
+WHERE  `from_station_id` =  ' 42'
+GROUP BY d
+LIMIT 0 , 31
+
+// Age 
+SELECT
+SUM(CASE WHEN 10 <= age_in_2014 AND age_in_2014 <= 20 THEN 1 ELSE 0 END) AS age1020,
+SUM(CASE WHEN 21 <= age_in_2014 AND age_in_2014 <= 30 THEN 1 ELSE 0 END) AS age2130,
+SUM(CASE WHEN 31 <= age_in_2014 AND age_in_2014 <= 40 THEN 1 ELSE 0 END) AS age3140,
+SUM(CASE WHEN 41 <= age_in_2014 AND age_in_2014 <= 50 THEN 1 ELSE 0 END) AS age4150,
+SUM(CASE WHEN 51 <= age_in_2014 AND age_in_2014 <= 60 THEN 1 ELSE 0 END) AS age5160,
+SUM(CASE WHEN 61 <= age_in_2014 AND age_in_2014 <= 70 THEN 1 ELSE 0 END) AS age6170,
+SUM(CASE WHEN 71 <= age_in_2014 AND age_in_2014 <= 80 THEN 1 ELSE 0 END) AS age7180,
+SUM(CASE WHEN 81 <= age_in_2014 AND age_in_2014 <= 90 THEN 1 ELSE 0 END) AS age8190
+FROM `divvy_trips_distances`
+WHERE  `from_station_id` =  '42'
+
+
+// Customer type
+SELECT COUNT(Case when usertype = 'Customer' Then 1 end) as Customers,
+COUNT(Case when usertype = 'Subscriber' Then 1 end) as Subscribers
+FROM divvy_trips_distances
+Where from_station_id = '42'
+
+Popularity 
+SELECT COUNT(`from_station_id`) as outflow, 
+COUNT(`to_station_id`) as inflow
+FROM `divvy_trips_distances`
+
+
+
