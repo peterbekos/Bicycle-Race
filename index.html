@@ -303,7 +303,9 @@
                                   .text(this.name + " | Station ID: " + this.stationID + "\n");
                                 customer(this.stationID);
                                 gen_demo(this.stationID);
-                                flow(this.stationID);                  
+                                flow(this.stationID); 
+								mapinflowbyid(this.stationID);
+								mapoutflowbyid(this.stationID);							
                                   });
 					   
                     
@@ -687,7 +689,35 @@ d3.json(querywithid.concat(id), function(error, data) {
                 //appending text info
  });
 });	
-}		   
+}
+
+function mapoutflowbyid(id)
+{
+var querywithid = "http://hpraja2.people.uic.edu/outflowmapbyid.php?id="
+d3.json(querywithid.concat(id), function(error, data) {
+    data.forEach(function(d) {
+		Sid = +d.StationID;
+		outflow = +d.outflow;
+		console.log(Sid +" "+ outflow);
+                var dataset = [Sid, outflow]; 
+			
+ });
+});	
+}	
+
+function mapinflowbyid(id)
+{
+var querywithid = "http://hpraja2.people.uic.edu/inflowmapbyid.php?id="
+d3.json(querywithid.concat(id), function(error, data) {
+    data.forEach(function(d) {
+		Sid = +d.StationID;
+		inflow = +d.inflow;
+		console.log(Sid +" "+ inflow);
+                var dataset = [Sid, inflow]; 
+                
+ });
+});	
+}			   
 //DO NOT DELETE - TEST POINTS 
 //         L.marker([23.0300, 72.5800]).addTo(map).bindPopup("This is where Hardik is from!<br/>City: Ahmedabad, India");
 //         L.marker([33.7167, 73.0667]).addTo(map).bindPopup("This is where his Majesty, Shahbaz, was born!<br/>City: Islamabad, Pakistan");
