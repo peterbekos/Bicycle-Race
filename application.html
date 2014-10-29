@@ -618,7 +618,7 @@ function making_bar_cahrts(dataset, location)
 }
 //****************************************************************************
 //PHP SCRIPTS 
-// Open PHP script for sqlquery and copy male, female, total counter-increment
+// Open PHP script for sqlquery and copy male, female, total counter-increment by id
 
 function gen_demo(id)
 {
@@ -645,7 +645,9 @@ d3.json(querywithid.concat(id), function(error, data) {
 });	
 }
 
-// query to get inflow and outflow //
+//****************************************************************************
+//PHP SCRIPTS 
+// Open PHP script for sqlquery and copy inflow, outflow by id
 function flow(id)
 {
 var querywithid = "http://hpraja2.people.uic.edu/inflow_outflow.php?id="
@@ -669,7 +671,8 @@ d3.json(querywithid.concat(id), function(error, data) {
     });
 });	
 }	
-
+//****************************************************************************
+//PHP SCRIPTS 
 // query to get customer and subscriber //
 function customer(id)
 {
@@ -690,7 +693,9 @@ d3.json(querywithid.concat(id), function(error, data) {
  });
 });	
 }
-
+//****************************************************************************
+//PHP SCRIPTS 
+// query to get count(outflow) by a specific id
 function mapoutflowbyid(id)
 {
 var querywithid = "http://hpraja2.people.uic.edu/outflowmapbyid.php?id="
@@ -705,6 +710,9 @@ d3.json(querywithid.concat(id), function(error, data) {
 });	
 }	
 
+//****************************************************************************
+//PHP SCRIPTS 
+// query to get count(inflow) by a specific id
 function mapinflowbyid(id)
 {
 var querywithid = "http://hpraja2.people.uic.edu/inflowmapbyid.php?id="
@@ -718,6 +726,40 @@ d3.json(querywithid.concat(id), function(error, data) {
  });
 });	
 }			   
+
+//****************************************************************************
+//PHP SCRIPTS 
+// query to grouped by 7 days 
+// if you enter id 0 does overall 
+// if you enter id > 0 does by that id station
+function sevendaycountbyid(id)
+{
+var querywithid = "http://hpraja2.people.uic.edu/count7daybyid.php?id="
+d3.json(querywithid.concat(id), function(error, data) {
+    data.forEach(function(d) {
+		wd = +d.wd;
+		total_trip = +d.total_trip;
+		console.log(wd +" "+ total_trip);
+                var dataset = [wd, total_trip]; 
+                
+ });
+});	
+}		
+
+function alldaycountbyid(id)
+{
+var querywithid = "http://hpraja2.people.uic.edu/countdaybyid.php?id="
+d3.json(querywithid.concat(id), function(error, data) {
+    data.forEach(function(d) {
+		wd = +d.wd;
+		total_trip = +d.total_trip;
+		console.log(wd +" "+ total_trip);
+                var dataset = [wd, total_trip]; 
+                
+ });
+});	
+}		   
+
 //DO NOT DELETE - TEST POINTS 
 //         L.marker([23.0300, 72.5800]).addTo(map).bindPopup("This is where Hardik is from!<br/>City: Ahmedabad, India");
 //         L.marker([33.7167, 73.0667]).addTo(map).bindPopup("This is where his Majesty, Shahbaz, was born!<br/>City: Islamabad, Pakistan");
