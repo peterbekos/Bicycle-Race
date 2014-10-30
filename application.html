@@ -400,8 +400,8 @@ d3.json(querywithid.concat(id), function(error, data) {
     data.forEach(function(d) {
 		id = +d.id;
 		outflow = +d.outflow;
-		toLon = +d.lat;
-		toLat = +d.long;
+		
+		laglog(this.id); 
               
 			
  });
@@ -871,6 +871,21 @@ d3.json(querywithid.concat(id), function(error, data) {
 }	
 //****************************************************************************
 //PHP SCRIPTS 
+function laglog(id)
+{
+var querywithid = "http://hpraja2.people.uic.edu/lat_longbyid	.php?id="
+d3.json(querywithid.concat(id), function(error, data) {
+    data.forEach(function(d) {
+        id = +d.id;
+		Lat = +d.lat; 
+		Long = +d.lon;
+  
+             
+             var dataset = [InFlow, OutFlow]; 
+                
+    });
+});	
+}	
 
 
 //DO NOT DELETE - TEST POINTS 
