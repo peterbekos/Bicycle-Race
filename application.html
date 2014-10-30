@@ -284,6 +284,8 @@
             
                         marker["name"] = stationsInfo[i][0];
 			marker["stationID"] = stationsInfo[i][4];
+                        marker["lat"] = stationsInfo[i][1];
+                        marker["lon"] = stationsInfo[i][2];
                         
                         //on-click function which cleans out previously appended graphs from every affected div
                         marker.on('click', function(e) {
@@ -297,15 +299,32 @@
                                 d3.select("#infoThree").selectAll("text").remove();
                                 d3.select("#infoFour").selectAll("text").remove();
                                 
+                                inflowLayer.clearLayers();
+                                
                                 
                                 console.log(this.name);
+                                console.log("Lon: " + this.lon + " Lat: " + this.lat);
+                              
                                 d3.select("#info")
                                   .text(this.name + " | Station ID: " + this.stationID + "\n");
                                 customer(this.stationID);
                                 gen_demo(this.stationID);
                                 flow(this.stationID); 
-								mapinflowbyid(this.stationID);
-								mapoutflowbyid(this.stationID);							
+                                
+                                //var maxInflow;
+                                //var minInflow;
+                                
+                                var maxMin = maxMinInflow(this.stationID, this.lon, this.lat);
+                                
+                                console.log(maxMin);
+                              //  console.log("Max: " + maxInflow + " Min: " + minInflow);
+                                
+				//mapinflowbyid(this.stationID, this.lon, this.lat, maxInflow, minInflow);
+                                
+                                
+                                
+                                //function mapinflowbyid(id, toStationLon, toStationLat)
+				//mapoutflowbyid(this.stationID);							
                                   });
 					   
                     
@@ -315,7 +334,161 @@
 		});//end of overall read-in			
                });//end of pupularity.csv read-in
            });//end of divvysatiionswithID.json read-in
-//*************************************************************************************** 
+           //
+           //
+    var inflowLayer = new L.LayerGroup();
+    
+    
+//***************************************************************************************
+//
+////****************************************************************************
+//PHP SCRIPTS 
+// query to get customer and subscriber //
+function customer(id)
+{
+var querywithid = "http://hpraja2.people.uic.edu/customer.php?id="
+d3.json(querywithid.concat(id), function(error, data) {
+    data.forEach(function(d) {
+		Customers = +d.Customers;
+		Subscribers = +d.Subscribers;
+                var dataset = [Customers, Subscribers]; 
+                
+		var colors = ["#666666", "#888888", "#AAAAAA"];
+                make_pie_charts(dataset, "infoThree", colors);
+				
+				d3.select("#infoThree").append("text").html("<p style=\"background-color:" + colors[0] + "\">Customers:" + Customers + "</p>");
+				d3.select("#infoThree").append("text").html("<p style=\"background-color:" + colors[1] + "\">Subscribers:" + Subscribers + "</p>");
+				d3.select("#infoThree").append("text").html("<p>Total:" + (Customers + Subscribers) + "</p>");
+                //appending text info
+ });
+});	
+}
+
+//****************************************************************************
+
+// Open PHP script for max inflow
+function maxMinInflow(id, lon, lat)
+{
+var querywithid = "http://hpraja2.people.uic.edu/maxinflow.php?id="
+d3.json(querywithid.concat(id), function(error, data) {
+    var max, min, dataset;
+    data.forEach(function(d) {
+        max = +d.max;
+	min = +d.min;
+	
+        dataset = [max, min]; 
+        
+    });
+   // maxInflow = max;
+   // minInflow = min;
+    console.log(dataset);
+  //  return dataset;
+    
+    
+    mapinflowbyid(id, lon, lat, max, min)
+    //console.log("Max: " + max + " Min: " + min);
+});	
+}
+
+//****************************************************************************
+//PHP SCRIPTS 
+// query to get count(outflow) by a specific id
+function mapoutflowbyid(id)
+{
+var querywithid = "http://hpraja2.people.uic.edu/outflowmapbyid.php?id="
+d3.json(querywithid.concat(id), function(error, data) {
+    data.forEach(function(d) {
+		id = +d.id;
+		outflow = +d.outflow;
+		toLon = +d.lat;
+		toLat = +d.long;
+              
+			
+ });
+});	
+}	
+
+
+// PHP SCRIPTS
+//
+
+
+//****************************************************************************
+//PHP SCRIPTS 
+// query to get count(inflow) by a specific id
+function mapinflowbyid(id, toStationLon, toStationLat, maxInflow, minInflow)
+{
+var querywithid = "http://hpraja2.people.uic.edu/inflowmapbyid.php?id="
+d3.json(querywithid.concat(id), function(error, data) {
+    //var i;
+    var weightScale = d3.scale.linear().domain([minInflow, maxInflow]).range([2, 10]);
+    
+    data.forEach(function(d) {
+		Sid = +d.StationID;
+		inflow = +d.inflow;
+                fromLon = +d.from_station_longitude;
+                fromLat = +d.from_station_latitude;
+		//console.log(Sid +" "+ inflow);
+                //var dataset = [Sid, inflow, fromLon, fromLat];
+                
+                
+                //console.log(dataset.length);
+                L.polyline([
+                            [fromLat, fromLon],
+                            [toStationLat, toStationLon],
+                            ],
+                            {
+                                color: 'red',
+                                weight: weightScale(inflow),
+                                opacity: .7
+                                //dashArray: '20,15',
+                                //lineJoin: 'round'
+                            }
+                            ).addTo(inflowLayer);
+                
+                
+                
+                //[{"StationID":"5","inflow":"60","from_station_latitude":"41.87395806000000000","from_station_longitude":"-87.62773949000000000"},
+                
+                
+ });
+        console.log("Max: " + maxInflow + " Min: " + minInflow);
+       //console.log(i);
+});	
+}			   
+
+//****************************************************************************
+//PHP SCRIPTS 
+// query to grouped by 7 days 
+// if you enter id 0 does overall 
+// if you enter id > 0 does by that id station
+function sevendaycountbyid(id)
+{
+var querywithid = "http://hpraja2.people.uic.edu/count7daybyid.php?id="
+d3.json(querywithid.concat(id), function(error, data) {
+    data.forEach(function(d) {
+		wd = +d.wd;
+		total_trip = +d.total_trip;
+		//console.log(wd +" "+ total_trip);
+                var dataset = [wd, total_trip]; 
+                
+ });
+});	
+}		
+
+function alldaycountbyid(id)
+{
+var querywithid = "http://hpraja2.people.uic.edu/countdaybyid.php?id="
+d3.json(querywithid.concat(id), function(error, data) {
+    data.forEach(function(d) {
+		wd = +d.wd;
+		total_trip = +d.total_trip;
+		//console.log(wd +" "+ total_trip);
+                var dataset = [wd, total_trip]; 
+                
+ });
+});	
+}		   
 //MAP INTERACTIVITY               
 //link descriptions
 var osmLink = '<a href="http://openstreetmap.org">OpenStreetMap</a>', 
@@ -353,7 +526,8 @@ var baseLayers = {
 
 var overlays = {
 	"Divvy Stations": divvyStationLayer,
-        "Commuinites": chicagoCommunitiesLayer
+        "Commuinites": chicagoCommunitiesLayer,
+        "Inflow": inflowLayer
 };
 //binding layer group to map
 L.control.layers(baseLayers, overlays).addTo(map);
@@ -671,94 +845,33 @@ d3.json(querywithid.concat(id), function(error, data) {
     });
 });	
 }	
-//****************************************************************************
-//PHP SCRIPTS 
-// query to get customer and subscriber //
-function customer(id)
+
+function oflow(id)
 {
-var querywithid = "http://hpraja2.people.uic.edu/customer.php?id="
+var querywithid = "http://hpraja2.people.uic.edu/inflow_outflow.php?id="
 d3.json(querywithid.concat(id), function(error, data) {
     data.forEach(function(d) {
-		Customers = +d.Customers;
-		Subscribers = +d.Subscribers;
-                var dataset = [Customers, Subscribers]; 
-                
-		var colors = ["#666666", "#888888", "#AAAAAA"];
-                make_pie_charts(dataset, "infoThree", colors);
-				
-				d3.select("#infoThree").append("text").html("<p style=\"background-color:" + colors[0] + "\">Customers:" + Customers + "</p>");
-				d3.select("#infoThree").append("text").html("<p style=\"background-color:" + colors[1] + "\">Subscribers:" + Subscribers + "</p>");
-				d3.select("#infoThree").append("text").html("<p>Total:" + (Customers + Subscribers) + "</p>");
+        InFlow = +d.InFlow;
+	OutFlow = +d.OutFlow; 
+  
+             
+             var dataset = [InFlow, OutFlow]; 
+             
+	     var colors = ["#FFFF99", "#FF99FF", "#99FFFF"];
+             make_pie_charts(dataset, "infoFour", colors);
+			 
+			d3.select("#infoFour").append("text").html("<p style=\"background-color:" + colors[0] + "\">InFlow:" + male_cnt + "</p>");
+			d3.select("#infoFour").append("text").html("<p style=\"background-color:" + colors[1] + "\">OutFlow:" + female_cnt + "</p>");
+			d3.select("#infoFour").append("text").html("<p>Total:" + (InFlow + OutFlow) + "</p>");
+                       
                 //appending text info
- });
-});	
-}
-//****************************************************************************
-//PHP SCRIPTS 
-// query to get count(outflow) by a specific id
-function mapoutflowbyid(id)
-{
-var querywithid = "http://hpraja2.people.uic.edu/outflowmapbyid.php?id="
-d3.json(querywithid.concat(id), function(error, data) {
-    data.forEach(function(d) {
-		Sid = +d.StationID;
-		outflow = +d.outflow;
-		console.log(Sid +" "+ outflow);
-                var dataset = [Sid, outflow]; 
-			
- });
+                
+    });
 });	
 }	
-
 //****************************************************************************
 //PHP SCRIPTS 
-// query to get count(inflow) by a specific id
-function mapinflowbyid(id)
-{
-var querywithid = "http://hpraja2.people.uic.edu/inflowmapbyid.php?id="
-d3.json(querywithid.concat(id), function(error, data) {
-    data.forEach(function(d) {
-		Sid = +d.StationID;
-		inflow = +d.inflow;
-		console.log(Sid +" "+ inflow);
-                var dataset = [Sid, inflow]; 
-                
- });
-});	
-}			   
 
-//****************************************************************************
-//PHP SCRIPTS 
-// query to grouped by 7 days 
-// if you enter id 0 does overall 
-// if you enter id > 0 does by that id station
-function sevendaycountbyid(id)
-{
-var querywithid = "http://hpraja2.people.uic.edu/count7daybyid.php?id="
-d3.json(querywithid.concat(id), function(error, data) {
-    data.forEach(function(d) {
-		wd = +d.wd;
-		total_trip = +d.total_trip;
-		console.log(wd +" "+ total_trip);
-                var dataset = [wd, total_trip]; 
-                
- });
-});	
-}		
-
-function alldaycountbyid(id)
-{
-var querywithid = "http://hpraja2.people.uic.edu/countdaybyid.php?id="
-d3.json(querywithid.concat(id), function(error, data) {
-    data.forEach(function(d) {
-		wd = +d.wd;
-		total_trip = +d.total_trip;
-		console.log(wd +" "+ total_trip);
-                var dataset = [wd, total_trip]; 
-                
- });
-});	
-}		   
 
 //DO NOT DELETE - TEST POINTS 
 //         L.marker([23.0300, 72.5800]).addTo(map).bindPopup("This is where Hardik is from!<br/>City: Ahmedabad, India");
