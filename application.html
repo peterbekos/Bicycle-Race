@@ -791,6 +791,23 @@ d3.json(querywithid.concat(id), function(error, data) {
 });	
 }	
 
+//****************************************************************************
+//PHP SCRIPTS 
+// Open PHP script for max inflow
+function maxinflow(id)
+{
+var querywithid = "http://hpraja2.people.uic.edu/maxinflow.php?id="
+d3.json(querywithid.concat(id), function(error, data) {
+    data.forEach(function(d) {
+        max = +d.max;
+		min = +d.min;
+	
+             var dataset = [max, min]; 
+  
+                
+    });
+});	
+}
 
 //DO NOT DELETE - TEST POINTS 
 //         L.marker([23.0300, 72.5800]).addTo(map).bindPopup("This is where Hardik is from!<br/>City: Ahmedabad, India");
