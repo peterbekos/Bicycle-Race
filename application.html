@@ -289,17 +289,18 @@
                         
                         //on-click function which cleans out previously appended graphs from every affected div
                         marker.on('click', function(e) {
-                                d3.select("#infoOne").selectAll("svg").remove();
+                                //d3.select("#infoOne").selectAll("svg").remove();
                                 d3.select("#infoTwo").selectAll("svg").remove();
                                 d3.select("#infoThree").selectAll("svg").remove();
                                 d3.select("#infoFour").selectAll("svg").remove();
                                 
-                                d3.select("#infoOne").selectAll("text").remove();
+                                //d3.select("#infoOne").selectAll("text").remove();
                                 d3.select("#infoTwo").selectAll("text").remove();
                                 d3.select("#infoThree").selectAll("text").remove();
                                 d3.select("#infoFour").selectAll("text").remove();
                                 
                                 inflowLayer.clearLayers();
+                                outflowLayer.clearLayers();
                                 
                                 
                                 console.log(this.name);
@@ -310,6 +311,11 @@
                                 customer(this.stationID);
                                 gen_demo(this.stationID);
                                 flow(this.stationID); 
+                                
+                                
+                                mapoutflowbyid(this.stationID, this.lon, this.lat);
+                                
+                                //laglog(this.stationID);
                                 
                                 //var maxInflow;
                                 //var minInflow;
@@ -337,6 +343,7 @@
            //
            //
     var inflowLayer = new L.LayerGroup();
+    var outflowLayer = new L.LayerGroup();
     
     
 //***************************************************************************************
@@ -393,7 +400,7 @@ d3.json(querywithid.concat(id), function(error, data) {
 //****************************************************************************
 //PHP SCRIPTS 
 // query to get count(outflow) by a specific id
-function mapoutflowbyid(id)
+function mapoutflowbyid(id, lon, lat)
 {
 var querywithid = "http://hpraja2.people.uic.edu/outflowmapbyid.php?id="
 d3.json(querywithid.concat(id), function(error, data) {
@@ -401,12 +408,45 @@ d3.json(querywithid.concat(id), function(error, data) {
 		id = +d.id;
 		outflow = +d.outflow;
 		
-		laglog(this.id); 
-              
-			
+		laglog(id, outflow, lon, lat); 
+
  });
 });	
 }	
+
+
+//PHP SCRIPTS 
+function laglog(id, outflow, lon, lat)
+{
+var querywithid = "http://hpraja2.people.uic.edu/lat_longbyid.php?id="
+d3.json(querywithid.concat(id), function(error, data) {
+   // data.id = 
+   // data.forEach(function(d) {
+        id = data.id;
+      //  id = +d.id;
+		fromLat = +data[0].lat; 
+		fromLon = +data[0].lon;
+                
+                 L.polyline([
+                            [fromLat, fromLon],
+                            [lat, lon]
+                            ],
+                            {
+                                color: 'green',
+                                weight: 5,      //weightScale(outflow),
+                                opacity: .7
+                                //dashArray: '20,15',
+                                //lineJoin: 'round'
+                            }
+                            ).addTo(outflowLayer);
+  
+             
+             //var dataset = [Lat, Long]; 
+               // console.log(Lat);
+   // });
+});	
+}	
+
 
 
 // PHP SCRIPTS
@@ -527,7 +567,8 @@ var baseLayers = {
 var overlays = {
 	"Divvy Stations": divvyStationLayer,
         "Commuinites": chicagoCommunitiesLayer,
-        "Inflow": inflowLayer
+        "Inflow": inflowLayer,
+        "Outflow": outflowLayer
 };
 //binding layer group to map
 L.control.layers(baseLayers, overlays).addTo(map);
@@ -870,23 +911,6 @@ d3.json(querywithid.concat(id), function(error, data) {
 });	
 }	
 //****************************************************************************
-//PHP SCRIPTS 
-function laglog(id)
-{
-var querywithid = "http://hpraja2.people.uic.edu/lat_longbyid	.php?id="
-d3.json(querywithid.concat(id), function(error, data) {
-    data.forEach(function(d) {
-        id = +d.id;
-		Lat = +d.lat; 
-		Long = +d.lon;
-  
-             
-             var dataset = [InFlow, OutFlow]; 
-                
-    });
-});	
-}	
-
 
 //DO NOT DELETE - TEST POINTS 
 //         L.marker([23.0300, 72.5800]).addTo(map).bindPopup("This is where Hardik is from!<br/>City: Ahmedabad, India");
