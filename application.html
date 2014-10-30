@@ -310,7 +310,19 @@
                                 customer(this.stationID);
                                 gen_demo(this.stationID);
                                 flow(this.stationID); 
-				mapinflowbyid(this.stationID, this.lon, this.lat);
+                                
+                                //var maxInflow;
+                                //var minInflow;
+                                
+                                var maxMin = maxMinInflow(this.stationID, this.lon, this.lat);
+                                
+                                console.log(maxMin);
+                              //  console.log("Max: " + maxInflow + " Min: " + minInflow);
+                                
+				//mapinflowbyid(this.stationID, this.lon, this.lat, maxInflow, minInflow);
+                                
+                                
+                                
                                 //function mapinflowbyid(id, toStationLon, toStationLat)
 				//mapoutflowbyid(this.stationID);							
                                   });
@@ -351,6 +363,33 @@ d3.json(querywithid.concat(id), function(error, data) {
  });
 });	
 }
+
+//****************************************************************************
+
+// Open PHP script for max inflow
+function maxMinInflow(id, lon, lat)
+{
+var querywithid = "http://hpraja2.people.uic.edu/maxinflow.php?id="
+d3.json(querywithid.concat(id), function(error, data) {
+    var max, min, dataset;
+    data.forEach(function(d) {
+        max = +d.max;
+	min = +d.min;
+	
+        dataset = [max, min]; 
+        
+    });
+   // maxInflow = max;
+   // minInflow = min;
+    console.log(dataset);
+  //  return dataset;
+    
+    
+    mapinflowbyid(id, lon, lat, max, min)
+    //console.log("Max: " + max + " Min: " + min);
+});	
+}
+
 //****************************************************************************
 //PHP SCRIPTS 
 // query to get count(outflow) by a specific id
@@ -371,24 +410,34 @@ d3.json(querywithid.concat(id), function(error, data) {
 //****************************************************************************
 //PHP SCRIPTS 
 // query to get count(inflow) by a specific id
-function mapinflowbyid(id, toStationLon, toStationLat)
+function mapinflowbyid(id, toStationLon, toStationLat, maxInflow, minInflow)
 {
 var querywithid = "http://hpraja2.people.uic.edu/inflowmapbyid.php?id="
 d3.json(querywithid.concat(id), function(error, data) {
     //var i;
+    var weightScale = d3.scale.linear().domain([minInflow, maxInflow]).range([2, 10]);
+    
     data.forEach(function(d) {
 		Sid = +d.StationID;
 		inflow = +d.inflow;
                 fromLon = +d.from_station_longitude;
                 fromLat = +d.from_station_latitude;
 		//console.log(Sid +" "+ inflow);
-                var dataset = [Sid, inflow, fromLon, fromLat];
+                //var dataset = [Sid, inflow, fromLon, fromLat];
+                
                 
                 //console.log(dataset.length);
                 L.polyline([
                             [fromLat, fromLon],
                             [toStationLat, toStationLon],
-                            ]
+                            ],
+                            {
+                                color: 'red',
+                                weight: weightScale(inflow),
+                                opacity: .7
+                                //dashArray: '20,15',
+                                //lineJoin: 'round'
+                            }
                             ).addTo(inflowLayer);
                 
                 
@@ -397,7 +446,7 @@ d3.json(querywithid.concat(id), function(error, data) {
                 
                 
  });
- 
+        console.log("Max: " + maxInflow + " Min: " + minInflow);
        //console.log(i);
 });	
 }			   
@@ -793,21 +842,7 @@ d3.json(querywithid.concat(id), function(error, data) {
 
 //****************************************************************************
 //PHP SCRIPTS 
-// Open PHP script for max inflow
-function maxinflow(id)
-{
-var querywithid = "http://hpraja2.people.uic.edu/maxinflow.php?id="
-d3.json(querywithid.concat(id), function(error, data) {
-    data.forEach(function(d) {
-        max = +d.max;
-		min = +d.min;
-	
-             var dataset = [max, min]; 
-  
-                
-    });
-});	
-}
+
 
 //DO NOT DELETE - TEST POINTS 
 //         L.marker([23.0300, 72.5800]).addTo(map).bindPopup("This is where Hardik is from!<br/>City: Ahmedabad, India");
